@@ -14,26 +14,15 @@ namespace swi
         {
             Operation op;
             var opType = sinOp.OperationType;
-            
-            switch (opType.ToLower())
-            {
-                case "add":
-                    op = new AddOperation(sinOp);
-                    break;
-                case "sub":
-                    op = new SubOperation(sinOp);
-                    break;
-                case "mul":
-                    op = new MulOperation(sinOp);
-                    break;
-                case "sqrt":
-                    op = new SqrtOperation(sinOp);
-                    break;
-                default:
-                    throw new Exception($"Operation not found: {opType}");
-            }
 
-            return op;
+            return op = opType.ToLower() switch
+            {
+                "add" => new AddOperation(sinOp),
+                "sub" => new SubOperation(sinOp),
+                "mul" => new MulOperation(sinOp),
+                "sqrt" => new SqrtOperation(sinOp),
+                _ => throw new ArgumentException($"Operation not found: {opType}")
+            };  
         }
     }
 }
