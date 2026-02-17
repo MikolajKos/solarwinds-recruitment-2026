@@ -3,9 +3,11 @@
 OperationDb.Deserialize("input.json");
 var db = OperationDb.database;
 
-if (db == null) { return; }
-
 foreach (var item in db)
 {
-    Console.WriteLine(item.Key);
+    var result = OperationFactory.GenerateOperation(item.Value).Calculate();
+
+    Console.WriteLine($"{item.Key} operation: {item.Value.OperationType}\n" +
+        $"num1: {item.Value.Value1} num2: {item.Value.Value2 ?? 0}\n" +
+        $"result: {result}\n");
 }
