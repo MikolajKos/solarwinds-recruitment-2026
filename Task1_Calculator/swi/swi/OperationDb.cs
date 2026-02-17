@@ -10,18 +10,24 @@ namespace swi
 {
     public static class OperationDb
     {
-        public static Dictionary<string, SingleOperation>? database;
-
-        public static void Deserialize(string file)
+        public static Dictionary<string, SingleOperation> Deserialize(string file)
         {
+            if (!File.Exists(file))
+            {
+                throw new FileNotFoundException($"Could not find the desired file: {file}");
+            }
+
             try
             {
+                Dictionary<string, SingleOperation> result = new Dictionary<string, SingleOperation>();
                 string jsonContent = File.ReadAllText(file);
-                database = JsonSerializer.Deserialize<Dictionary<string, SingleOperation>>(jsonContent);
+
+                return JsonSerializer.Deserialize<Dictionary<string, SingleOperation>>(jsonContent) ?? 
+                    throw new InvalidOperationException("JSON file is empty or it has invalid format");
             }
-            catch 
+            catch (JsonException ex)
             {
-                throw new Exception("Could not deserialize from json file");
+                throw new Exception($"Error occured while parsing JSON file: {ex.Message}");
             }
         }
     }
