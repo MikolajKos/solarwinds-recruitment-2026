@@ -12,10 +12,9 @@ namespace swi
     {
         public static Operation GenerateOperation(SingleOperation sinOp)
         {
-            Operation op;
             var opType = sinOp.OperationType;
 
-            return op = opType.ToLower() switch
+            return opType.ToLower() switch
             {
                 "add" => new AddOperation(sinOp),
                 "sub" => new SubOperation(sinOp),

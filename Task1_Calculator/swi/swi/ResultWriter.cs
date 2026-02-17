@@ -10,17 +10,17 @@ namespace swi
 {
     public class ResultWriter
     {
-        private readonly string filePath_;
+        private readonly string _filePath;
 
         public ResultWriter(string filePath = "output.txt")
         {
-            filePath_ = filePath;
+            _filePath = filePath;
         }
 
         public void SaveResult(Dictionary<string, double> data)
         {
             var linesToWrite = GetResultLines(data);
-            File.WriteAllLines(filePath_, linesToWrite);
+            File.WriteAllLines(_filePath, linesToWrite);
         }
 
         private List<string> GetResultLines(Dictionary<string, double> data, bool sort = true)

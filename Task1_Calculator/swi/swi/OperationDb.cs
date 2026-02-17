@@ -19,7 +19,6 @@ namespace swi
 
             try
             {
-                Dictionary<string, SingleOperation> result = new Dictionary<string, SingleOperation>();
                 string jsonContent = File.ReadAllText(file);
 
                 return JsonSerializer.Deserialize<Dictionary<string, SingleOperation>>(jsonContent) ?? 
