@@ -26,7 +26,7 @@ namespace swi
             }
             catch (JsonException ex)
             {
-                throw new Exception($"Error occured while parsing JSON file: {ex.Message}");
+                throw new InvalidOperationException($"Error occured while parsing JSON file: {ex.Message}");
             }
         }
     }
