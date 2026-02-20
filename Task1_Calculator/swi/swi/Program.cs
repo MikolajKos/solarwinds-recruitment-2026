@@ -44,5 +44,3 @@ catch (Exception ex)
 {
     Console.WriteLine("Unknown exception occurred: " + ex.ToString());
 }
-
-Console.ReadLine();

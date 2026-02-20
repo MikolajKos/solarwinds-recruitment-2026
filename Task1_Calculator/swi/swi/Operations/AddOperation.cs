@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace swi.Operations
+﻿namespace swi.Operations
 {
     public class AddOperation : Operation
     {

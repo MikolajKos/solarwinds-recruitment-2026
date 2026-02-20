@@ -1,5 +1,3 @@
-using swi;
-
 namespace swi.Tests
 {
     public class OperationDbTests
