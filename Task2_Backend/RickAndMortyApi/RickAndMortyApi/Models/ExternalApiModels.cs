@@ -5,7 +5,7 @@ namespace RickAndMortyApi.Models
     public class RickAndMortyResponse<T>
     {
         [JsonPropertyName("info")]
-        public PageInfo info { get; set; } = new PageInfo();
+        public PageInfo Info { get; set; } = new PageInfo();
         [JsonPropertyName("results")]
         public List<T> Results { get; set; } = new List<T>();
     }
@@ -32,5 +32,15 @@ namespace RickAndMortyApi.Models
 
     public class Location : BaseRickAndMortyEntity { }
 
-    public class Episode : BaseRickAndMortyEntity { }
+    public class Episode : BaseRickAndMortyEntity 
+    {
+        [JsonPropertyName("characters")]
+        public List<CharacterUrl> Characters { get; set; } = new List<CharacterUrl>();
+    }
+
+    public class CharacterUrl
+    {
+        [JsonPropertyName("url")]
+        public string Url { get; set; } = string.Empty;
+    }
 }
