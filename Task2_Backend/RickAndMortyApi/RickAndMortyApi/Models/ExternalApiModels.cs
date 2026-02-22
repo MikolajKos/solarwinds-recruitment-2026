@@ -12,10 +12,10 @@ namespace RickAndMortyApi.Models
 
     public class PageInfo
     {
-        [JsonPropertyName("info")]
+        [JsonPropertyName("page")]
         public int Pages { get; set; }
         [JsonPropertyName("next")]
-        public int? Next { get; set; }
+        public string? Next { get; set; }
     }
 
     public class BaseRickAndMortyEntity

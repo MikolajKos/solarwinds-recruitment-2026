@@ -16,7 +16,7 @@ namespace RickAndMortyApi.Services
         {
             try
             {
-                var url = $"{endpoint}/{Uri.EscapeDataString(name)}";
+                var url = $"{endpoint}?name={Uri.EscapeDataString(name)}";
 
                 var response = await _httpClient.GetAsync(url);
 
