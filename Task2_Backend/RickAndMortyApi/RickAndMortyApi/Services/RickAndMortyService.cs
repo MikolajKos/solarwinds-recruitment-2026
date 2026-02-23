@@ -16,11 +16,6 @@ namespace RickAndMortyApi.Services
         {
             try
             {
-                /*                var query = (min.HasValue && max.HasValue) ?
-                                    $"?min={min}&max={max}" :
-                                    (min.HasValue ? $"?min={min}" :
-                                    (max.HasValue ? $"?max={max}" : ""));*/
-
                 List<Episode> episodes = await FetchAllEpisodes();
 
                 // Creating all pairs
@@ -36,7 +31,7 @@ namespace RickAndMortyApi.Services
                             var url2 = episode.Characters[j];
 
                             // Sort characters to avoid duplicates like Rick - Morty & Morty - Rick
-                            var pair = string.Compare(url1, url2) < 0 ? (url1, url2) : (url1, url2);
+                            var pair = string.Compare(url1, url2) < 0 ? (url1, url2) : (url2, url1);
 
                             if (pairs.ContainsKey(pair))
                                 pairs[pair]++;
@@ -108,20 +103,48 @@ namespace RickAndMortyApi.Services
 
         private async Task<List<TopPairsDto>> FetchCharactersNames(Dictionary<(string, string), int> pairs) 
         {
-            /*            try
-                        {
-                            // Reading all characters names
-                            var result = pairs.Select(x => new TopPairsDto { 
+            if (pairs.Count() == 0) return new List<TopPairsDto>();
 
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Unknown error occurred: {ex.Message}");
-                            return new List<TopPairsDto>();
-                        }*/
+            try
+            {
+                // Get unique character id pairs
+                var uniqueIds = new HashSet<string>();
+                
+                foreach (var key in pairs.Keys)
+                {
+                    uniqueIds.Add(key.Item1.TrimEnd('/').Split('/').Last());
+                    uniqueIds.Add(key.Item2.TrimEnd('/').Split('/').Last());
+                }
 
-            return new List<TopPairsDto>(); // Only for DEBUG purposes!!!
+                // Join id pairs
+                var charIdsQuery = string.Join(",", uniqueIds);
+
+                var url = $"character/{charIdsQuery}";
+
+                // For character/[id list] url, rick and morty api doesnt use pagination
+                // So i can read characters without searching through all pages
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                    return new List<TopPairsDto>();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var characters = JsonSerializer.Deserialize<List<Character>>(content) ?? new List<Character>();
+                var charDict = characters.ToDictionary(c => c.Url, c => c.Name);
+
+                // Populating result list with names and episodes
+                return pairs.Select(p => new TopPairsDto {
+                    Character1 = { Name = charDict[p.Key.Item1], Url = p.Key.Item1 },
+                    Character2 = { Name = charDict[p.Key.Item2], Url = p.Key.Item2 },
+                    Episodes = p.Value
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown error occurred: {ex.Message}");
+                return new List<TopPairsDto>();
+            }
         }
     }
 }
