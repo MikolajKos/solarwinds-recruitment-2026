@@ -4,6 +4,6 @@ namespace RickAndMortyApi.Services
 {
     public interface IRickAndMortyService
     {
-        Task<List<TopPairsDto>> FindTopPairs(int? min, int? max);
+        Task<List<TopPairsDto>> FindTopPairsAsync(int? min, int? max, int limit = 20);
     }
 }

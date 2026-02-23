@@ -12,7 +12,7 @@ namespace RickAndMortyApi.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<TopPairsDto>> FindTopPairs(int? min, int? max)
+        public async Task<List<TopPairsDto>> FindTopPairsAsync(int? min, int? max, int limit = 20)
         {
             try
             {
@@ -33,10 +33,10 @@ namespace RickAndMortyApi.Services
                         for (int j = i + 1; j < episode.Characters.Count; ++j)
                         {
                             var url1 = episode.Characters[i];
-                            var character2 = episode.Characters[j];
+                            var url2 = episode.Characters[j];
 
                             // Sort characters to avoid duplicates like Rick - Morty & Morty - Rick
-                            var pair = string.Compare(chara);
+                            var pair = string.Compare(url1, url2) < 0 ? (url1, url2) : (url1, url2);
 
                             if (pairs.ContainsKey(pair))
                                 pairs[pair]++;
@@ -45,6 +45,9 @@ namespace RickAndMortyApi.Services
                         }
                     }
                 }
+
+                // Sort and limit pairs
+                pairs = SortAndLimitTheScope(pairs, max, min, limit);
                 
                 return await FetchCharactersNames(pairs);
             }
@@ -53,6 +56,19 @@ namespace RickAndMortyApi.Services
                 Console.WriteLine($"Unknown error occurred: {ex.Message}");
                 return new List<TopPairsDto>();
             }
+        }
+
+        private static Dictionary<(string, string), int> SortAndLimitTheScope(Dictionary<(string, string), int> pairs, int? max, int? min, int limit)
+        {
+            // Sort and Limit by max, min allowed values and element count limit
+            return pairs.Where(x =>
+                // if max or min == null statement returns true without checking right side of || operator
+                (!max.HasValue || x.Value <= max.Value) &&
+                (!min.HasValue || x.Value >= min.Value)
+            )
+            .OrderByDescending(x => x.Value)
+            .Take(limit) // If limit is not set return 20 pairs by default
+            .ToDictionary(x => x.Key, x => x.Value);
         }
 
         private async Task<List<Episode>> FetchAllEpisodes()
@@ -67,8 +83,7 @@ namespace RickAndMortyApi.Services
                 {
                     var response = await _httpClient.GetAsync(nextUrl);
 
-                    if (!response.IsSuccessStatusCode)
-                        return new List<Episode>();
+                    if (!response.IsSuccessStatusCode) break;
 
                     var content = await response.Content.ReadAsStringAsync();
 
@@ -93,18 +108,20 @@ namespace RickAndMortyApi.Services
 
         private async Task<List<TopPairsDto>> FetchCharactersNames(Dictionary<(string, string), int> pairs) 
         {
-            try
-            {
-                // Reading all characters names
-                var result = pairs.Select(x => new TopPairsDto { 
-                    
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unknown error occurred: {ex.Message}");
-                return new List<TopPairsDto>();
-            }
+            /*            try
+                        {
+                            // Reading all characters names
+                            var result = pairs.Select(x => new TopPairsDto { 
+
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Unknown error occurred: {ex.Message}");
+                            return new List<TopPairsDto>();
+                        }*/
+
+            return new List<TopPairsDto>(); // Only for DEBUG purposes!!!
         }
     }
 }

@@ -11,6 +11,11 @@ builder.Services.AddHttpClient<IRickAndMortyClient, RickAndMortyClient>(client =
     client.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
 });
 
+builder.Services.AddHttpClient<IRickAndMortyService, RickAndMortyService>(client =>
+{
+    client.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -35,12 +35,6 @@ namespace RickAndMortyApi.Models
     public class Episode : BaseRickAndMortyEntity 
     {
         [JsonPropertyName("characters")]
-        public List<CharacterUrl> Characters { get; set; } = new List<CharacterUrl>();
-    }
-
-    public class CharacterUrl
-    {
-        [JsonPropertyName("url")]
-        public string Url { get; set; } = string.Empty;
+        public List<string> Characters { get; set; } = new List<string>();
     }
 }
