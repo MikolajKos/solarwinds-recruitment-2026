@@ -16,17 +16,30 @@ namespace RickAndMortyApi.Services
         {
             try
             {
+                var finalResponse = new RickAndMortyResponse<T>();
                 var url = $"{endpoint}?name={Uri.EscapeDataString(name)}";
 
-                var response = await _httpClient.GetAsync(url);
+                // Reading all pages
+                while (!string.IsNullOrEmpty(url)) 
+                {
+                    var response = await _httpClient.GetAsync(url);
 
-                if (!response.IsSuccessStatusCode)
-                    return null;
+                    if (!response.IsSuccessStatusCode)
+                        return null;
 
-                // Reads text from response
-                var content = await response.Content.ReadAsStringAsync();
-                
-                return JsonSerializer.Deserialize<RickAndMortyResponse<T>>(content);
+                    // Reads text from response
+                    var content = await response.Content.ReadAsStringAsync();
+                    
+                    var page = (JsonSerializer.Deserialize<RickAndMortyResponse<T>>(content) ??
+                        new RickAndMortyResponse<T>());
+
+                    // Fetch all results
+                    finalResponse.Results.AddRange(page?.Results ?? new List<T>());
+
+                    url = page?.Info?.Next;
+                }
+
+                return finalResponse;
             }
             catch (Exception)
             {

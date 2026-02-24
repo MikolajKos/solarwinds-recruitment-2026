@@ -121,19 +121,35 @@ namespace RickAndMortyApi.Services
 
                 var url = $"character/{charIdsQuery}";
 
+                // Create request batches
+                var batches = CreateBatches(charIdsQuery);
+
+                var tasks = batches.Select(batchIds =>
+                    _httpClient.GetAsync($"character/{batchIds}")
+                );
+
+                // Wait for all requests to finish their work
+                var responses = await Task.WhenAll(tasks);
+
                 // For character/[id list] url, rick and morty api doesnt use pagination
                 // So i can read characters without searching through all pages
-                var response = await _httpClient.GetAsync(url);
+                var  allCharacters = new List<Character>();
 
-                if (!response.IsSuccessStatusCode)
-                    return new List<TopPairsDto>();
+                foreach (var response in responses)
+                {
+                    if (response.IsSuccessStatusCode) 
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var batchCharacters = JsonSerializer.Deserialize<List<Character>>(content) ?? new List<Character>();
 
-                var content = await response.Content.ReadAsStringAsync();
+                        allCharacters.AddRange(batchCharacters);
+                    }
+                }
 
-                var characters = JsonSerializer.Deserialize<List<Character>>(content) ?? new List<Character>();
-                var charDict = characters.ToDictionary(c => c.Url, c => c.Name);
+                var charDict = allCharacters.ToDictionary(c => c.Url, c => c.Name);
 
                 // Populating result list with names and episodes
+
                 return pairs.Select(p => new TopPairsDto {
                     Character1 = { Name = charDict[p.Key.Item1], Url = p.Key.Item1 },
                     Character2 = { Name = charDict[p.Key.Item2], Url = p.Key.Item2 },
@@ -145,6 +161,16 @@ namespace RickAndMortyApi.Services
                 Console.WriteLine($"Unknown error occurred: {ex.Message}");
                 return new List<TopPairsDto>();
             }
+        }
+
+        private static List<string> CreateBatches(string ids, int maxBatchSize = 50)
+        {
+            var idsList = ids.Split(",");
+
+            return idsList
+                .Chunk(maxBatchSize)
+                .Select(chunk => string.Join(",", chunk))
+                .ToList();
         }
     }
 }
