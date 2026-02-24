@@ -42,7 +42,7 @@ namespace RickAndMortyApi.Services
                 }
 
                 // Sort and limit pairs
-                pairs = SortAndLimitTheScope(pairs, max, min, limit);
+                pairs = SortAndLimitTheScope(pairs, min, max, limit);
                 
                 return await FetchCharactersNames(pairs);
             }
@@ -53,7 +53,7 @@ namespace RickAndMortyApi.Services
             }
         }
 
-        private static Dictionary<(string, string), int> SortAndLimitTheScope(Dictionary<(string, string), int> pairs, int? max, int? min, int limit)
+        internal static Dictionary<(string, string), int> SortAndLimitTheScope(Dictionary<(string, string), int> pairs, int? min, int? max, int limit)
         {
             // Sort and Limit by max, min allowed values and element count limit
             return pairs.Where(x =>
@@ -163,7 +163,7 @@ namespace RickAndMortyApi.Services
             }
         }
 
-        private static List<string> CreateBatches(string ids, int maxBatchSize = 50)
+        internal static List<string> CreateBatches(string ids, int maxBatchSize = 50)
         {
             var idsList = ids.Split(",");
 
