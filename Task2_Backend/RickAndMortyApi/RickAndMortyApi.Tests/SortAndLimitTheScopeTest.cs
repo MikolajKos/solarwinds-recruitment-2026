@@ -46,7 +46,7 @@ namespace RickAndMortyApi.Tests
                     { ("url11", "url12"), 20 }, // x - because limit is 2
                     { ("url13", "url14"), 37 }, // OK
                     { ("url15", "url16"), 1 }   // x
-                },
+                },  
                 20, // min 
                 50, // max
                 2,  // limit
@@ -62,7 +62,13 @@ namespace RickAndMortyApi.Tests
 
         [Theory]
         [MemberData(nameof(GetTestCases))]
-        public void SortAndLimitTheScope_Should_Return_Only_Top_Pairs_Within_Limits(Dictionary<(string, string), int> pairs, int? min, int? max, int limit, Dictionary<(string, string), int> expectedPairs)
+        public void SortAndLimitTheScope_Should_Return_Only_Top_Pairs_Within_Limits(
+            Dictionary<(string, string), int> pairs, 
+            int? min, 
+            int? max, 
+            int limit, 
+            Dictionary<(string, string), int> expectedPairs
+        )
         {
             var result = RickAndMortyService.SortAndLimitTheScope(pairs, min, max, limit);
             
