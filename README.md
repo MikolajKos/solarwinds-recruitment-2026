@@ -48,13 +48,13 @@ Testing was a major focus in this project. Instead of writing trivial tests for 
    ```
 
 ### 🐳 How to Run (Docker)
-1. Navigate to the Task 2 project folder where the Dockerfile is located.
+1. Navigate to the Task 2 project catalog where '.sln' file is located.
 2. Build the Docker image:
    ```bash
-   docker build -t rick-and-morty-api .
+   docker build -f RickAndMortyApi/Dockerfile -t rick-and-morty-api .
    ```
-3. Run the container:
-4. ```bash
-   docker run -d -p 8080:8080 --name rm-api rick-and-morty-api
+3. Run the container (with Development environment enabled to access Swagger):
+   ```bash
+   docker run -d -p 8080:8080 -e ASPNETCORE_ENVIRONMENT=Development --name rm-api rick-and-morty-api
    ```
-5. Open your browser and navigate to http://localhost:8080/swagger/index.html to explore the API. (Note: Adjust the port if your Docker configuration exposes a different one).
+4. Open your browser and navigate to http://localhost:8080/swagger/index.html to explore the API. (Note: Adjust the port if your Docker configuration exposes a different one).
